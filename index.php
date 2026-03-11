@@ -31,53 +31,21 @@ $recommended = [
 require __DIR__ . '/partials/layout_top.php';
 
 ?>
-<div class="hero mb-4">
-    <div class="hero-inner">
-        <div class="row g-3 align-items-center">
-            <div class="col-12 col-lg-7">
-                <div class="h2 hero-title mb-1">Discover, borrow, and read — all in one place.</div>
-                <div class="hero-sub mb-3">A modern local e-library built for fast search, clean reading, and easy management.</div>
-                <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-success" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-compass me-1"></i>Browse Library</a>
-                    <?php if ($user): ?>
-                        <a class="btn btn-light" href="<?= e(url('/dashboard.php')) ?>"><i class="bi bi-bookmarks me-1"></i>My Library</a>
-                    <?php else: ?>
-                        <a class="btn btn-light" href="<?= e(url('/login.php')) ?>"><i class="bi bi-box-arrow-in-right me-1"></i>Sign in</a>
-                    <?php endif; ?>
-                </div>
-            </div>
-            <div class="col-12 col-lg-5">
-                <div class="stat-grid">
-                    <div class="stat">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="k">Books</div>
-                            <div class="i"><i class="bi bi-journal-bookmark"></i></div>
-                        </div>
-                        <div class="v">120+</div>
-                    </div>
-                    <div class="stat green">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="k">Categories</div>
-                            <div class="i"><i class="bi bi-tags"></i></div>
-                        </div>
-                        <div class="v">24</div>
-                    </div>
-                    <div class="stat amber">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="k">Downloads</div>
-                            <div class="i"><i class="bi bi-download"></i></div>
-                        </div>
-                        <div class="v">3.4K</div>
-                    </div>
-                    <div class="stat purple">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="k">Rating</div>
-                            <div class="i"><i class="bi bi-star"></i></div>
-                        </div>
-                        <div class="v">4.6</div>
-                    </div>
-                </div>
-            </div>
+<div class="browse-head mb-4">
+    <div class="browse-head-inner">
+        <div class="browse-title">Discover ebooks you’ll love</div>
+        <div class="browse-sub text-muted">Search, explore categories, and download files in seconds.</div>
+
+        <form method="get" action="<?= e(url('/browse.php')) ?>" class="browse-search mt-3">
+            <input class="form-control browse-search-input" name="q" placeholder="Search books, authors..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
+            <button class="btn btn-primary browse-search-btn" type="submit">Search</button>
+        </form>
+
+        <div class="browse-filters mt-3">
+            <a class="btn btn-outline-primary" href="<?= e(url('/browse.php')) ?>">Browse all</a>
+            <a class="btn btn-light" href="<?= e(url('/browse.php?category=1')) ?>">Fiction</a>
+            <a class="btn btn-light" href="<?= e(url('/browse.php?category=2')) ?>">Non-Fiction</a>
+            <a class="btn btn-light" href="<?= e(url('/browse.php?category=3')) ?>">Science</a>
         </div>
     </div>
 </div>
@@ -105,8 +73,8 @@ require __DIR__ . '/partials/layout_top.php';
                 </div>
                 <div class="book-overlay"></div>
                 <div class="book-actions">
-                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-eye me-1"></i>Details</a>
-                    <a class="btn btn-sm btn-success w-100" href="<?= e(url('/register.php')) ?>"><i class="bi bi-book me-1"></i>Read</a>
+                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/browse.php?q=' . urlencode((string)$b['title']))) ?>"><i class="bi bi-eye me-1"></i>Details</a>
+                    <a class="btn btn-sm btn-success w-100" href="<?= e(url('/browse.php?q=' . urlencode((string)$b['title']))) ?>"><i class="bi bi-book me-1"></i>Read</a>
                 </div>
             </div>
             <div class="book-meta">
@@ -148,8 +116,8 @@ require __DIR__ . '/partials/layout_top.php';
                 </div>
                 <div class="book-overlay"></div>
                 <div class="book-actions">
-                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-eye me-1"></i>Details</a>
-                    <a class="btn btn-sm btn-success w-100" href="<?= e(url('/register.php')) ?>"><i class="bi bi-book me-1"></i>Read</a>
+                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/browse.php?q=' . urlencode((string)$b['title']))) ?>"><i class="bi bi-eye me-1"></i>Details</a>
+                    <a class="btn btn-sm btn-success w-100" href="<?= e(url('/browse.php?q=' . urlencode((string)$b['title']))) ?>"><i class="bi bi-book me-1"></i>Read</a>
                 </div>
             </div>
             <div class="book-meta">

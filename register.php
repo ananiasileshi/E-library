@@ -49,8 +49,8 @@ if (is_post()) {
     if (!$errors) {
         $hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => (int)$config['security']['bcrypt_cost']]);
 
-        $stmt = db()->prepare('INSERT INTO users (name, email, password_hash, role, status) VALUES (?, ?, ?, \"member\", \"active\")');
-        $stmt->execute([$name, $email, $hash]);
+        $stmt = db()->prepare('INSERT INTO users (name, email, password_hash, role, status) VALUES (?, ?, ?, ?, ?)');
+        $stmt->execute([$name, $email, $hash, 'member', 'active']);
 
         $_SESSION['user_id'] = (int)db()->lastInsertId();
         redirect('/dashboard.php');

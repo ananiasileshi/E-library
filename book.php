@@ -15,7 +15,22 @@ $stmt->execute([$id]);
 $book = $stmt->fetch();
 
 if (!$book) {
-    redirect('/browse.php');
+    http_response_code(404);
+    $title = 'Book not found';
+    require __DIR__ . '/partials/layout_top.php';
+    ?>
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="h5 mb-1 section-title">Book not available</div>
+            <div class="text-muted">This book might be deleted, archived, or not marked as active.</div>
+            <div class="mt-3">
+                <a class="btn btn-light" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-arrow-left me-1"></i>Back to browse</a>
+            </div>
+        </div>
+    </div>
+    <?php
+    require __DIR__ . '/partials/layout_bottom.php';
+    exit;
 }
 
 db()->prepare('UPDATE books SET views = views + 1 WHERE id = ?')->execute([$id]);
@@ -38,8 +53,10 @@ require __DIR__ . '/partials/layout_top.php';
                 </div>
                 <div class="mt-3 d-grid gap-2">
                     <?php if ((string)($book['file_path'] ?? '') !== ''): ?>
+                        <a class="btn btn-primary" href="<?= e(url('/read.php?id=' . (int)$book['id'])) ?>" target="_blank"><i class="bi bi-book me-1"></i>Read</a>
                         <a class="btn btn-success" href="<?= e(url('/download.php?id=' . (int)$book['id'])) ?>"><i class="bi bi-download me-1"></i>Download</a>
                     <?php else: ?>
+                        <button class="btn btn-primary" disabled><i class="bi bi-book me-1"></i>Read</button>
                         <button class="btn btn-success" disabled><i class="bi bi-download me-1"></i>Download</button>
                     <?php endif; ?>
                     <a class="btn btn-light" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-arrow-left me-1"></i>Back to browse</a>

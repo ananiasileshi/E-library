@@ -41,3 +41,16 @@ CREATE TABLE IF NOT EXISTS books (
     KEY idx_books_category (category_id),
     CONSTRAINT fk_books_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
+
+INSERT INTO categories (name, slug, parent_id) VALUES
+    ('Fiction', 'fiction', NULL),
+    ('Non-Fiction', 'non-fiction', NULL),
+    ('Science', 'science', NULL),
+    ('Technology', 'technology', NULL),
+    ('Business', 'business', NULL),
+    ('Biography', 'biography', NULL),
+    ('History', 'history', NULL),
+    ('Children', 'children', NULL),
+    ('Fantasy', 'fantasy', NULL),
+    ('Romance', 'romance', NULL)
+ON DUPLICATE KEY UPDATE name = VALUES(name);

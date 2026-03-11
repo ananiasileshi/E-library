@@ -126,9 +126,9 @@ $page = min($page, $pages);
                                     <div class="book-actions">
                                         <a class="btn btn-sm btn-light w-100" href="<?= e(url('/book.php?id=' . (int)$b['id'])) ?>"><i class="bi bi-eye me-1"></i>Details</a>
                                         <?php if ((string)($b['file_path'] ?? '') !== ''): ?>
-                                            <a class="btn btn-sm btn-success w-100" href="<?= e(url('/download.php?id=' . (int)$b['id'])) ?>"><i class="bi bi-download me-1"></i>Download</a>
+                                            <a class="btn btn-sm btn-success w-100" href="<?= e(url('/read.php?id=' . (int)$b['id'])) ?>" target="_blank"><i class="bi bi-book me-1"></i>Read</a>
                                         <?php else: ?>
-                                            <button class="btn btn-sm btn-success w-100" disabled><i class="bi bi-download me-1"></i>Download</button>
+                                            <button class="btn btn-sm btn-success w-100" disabled><i class="bi bi-book me-1"></i>Read</button>
                                         <?php endif; ?>
                                     </div>
                                 </div>
