@@ -46,7 +46,11 @@ require __DIR__ . '/partials/layout_top.php';
             <div class="card-body">
                 <div class="book-cover" style="max-width: 320px; margin: 0 auto;">
                     <?php if ((string)($book['cover_path'] ?? '') !== ''): ?>
-                        <img alt="" src="<?= e((string)$book['cover_path']) ?>">
+                        <?php
+                        $cover = (string)$book['cover_path'];
+                        $coverSrc = preg_match('~^https?://~i', $cover) ? $cover : url('/' . ltrim($cover, '/'));
+                        ?>
+                        <img alt="" src="<?= e($coverSrc) ?>">
                     <?php else: ?>
                         <div class="text-muted small">No cover</div>
                     <?php endif; ?>

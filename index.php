@@ -4,29 +4,17 @@ declare(strict_types=1);
 
 $title = 'Home';
 
-$recent = [
-    ['title' => 'Steve Jobs', 'author' => 'Walter Isaacson', 'rating' => 4.5, 'cover' => 'https://covers.openlibrary.org/b/id/8231856-L.jpg'],
-    ['title' => 'Radical', 'author' => 'David Platt', 'rating' => 4.2, 'cover' => 'https://covers.openlibrary.org/b/id/8235116-L.jpg'],
-    ['title' => "Ender\'s Game", 'author' => 'Orson Scott Card', 'rating' => 4.6, 'cover' => 'https://covers.openlibrary.org/b/id/8235081-L.jpg'],
-    ['title' => 'The Hobbit', 'author' => 'J.R.R. Tolkien', 'rating' => 4.7, 'cover' => 'https://covers.openlibrary.org/b/id/6979861-L.jpg'],
-    ['title' => 'Holbein', 'author' => 'Norbert Wolf', 'rating' => 4.1, 'cover' => 'https://covers.openlibrary.org/b/id/8244151-L.jpg'],
-    ['title' => 'The Coral Island', 'author' => 'R.M. Ballantyne', 'rating' => 3.9, 'cover' => 'https://covers.openlibrary.org/b/id/8231998-L.jpg'],
-];
+require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/config/db.php';
 
-$recommended = [
-    ['title' => 'An American Life', 'author' => 'Ronald Reagan', 'rating' => 4.0, 'cover' => 'https://covers.openlibrary.org/b/id/8232140-L.jpg'],
-    ['title' => 'Sherlock Holmes', 'author' => 'Arthur Conan Doyle', 'rating' => 4.6, 'cover' => 'https://covers.openlibrary.org/b/id/8232405-L.jpg'],
-    ['title' => "The Sound of Things Falling", 'author' => 'Juan Gabriel Vásquez', 'rating' => 4.2, 'cover' => 'https://covers.openlibrary.org/b/id/8235030-L.jpg'],
-    ['title' => 'The Fault in Our Stars', 'author' => 'John Green', 'rating' => 4.4, 'cover' => 'https://covers.openlibrary.org/b/id/8231999-L.jpg'],
-    ['title' => 'Just My Type', 'author' => 'Simon Garfield', 'rating' => 4.1, 'cover' => 'https://covers.openlibrary.org/b/id/8232795-L.jpg'],
-    ['title' => 'Wake', 'author' => 'Lisa McMann', 'rating' => 3.8, 'cover' => 'https://covers.openlibrary.org/b/id/8232874-L.jpg'],
-    ['title' => 'Fearless Captain', 'author' => 'A.L. Kline', 'rating' => 3.7, 'cover' => 'https://covers.openlibrary.org/b/id/8231820-L.jpg'],
-    ['title' => 'Execute', 'author' => 'S. J. Scott', 'rating' => 3.9, 'cover' => 'https://covers.openlibrary.org/b/id/8231876-L.jpg'],
-    ['title' => 'Harry Potter', 'author' => 'J.K. Rowling', 'rating' => 4.8, 'cover' => 'https://covers.openlibrary.org/b/id/7884866-L.jpg'],
-    ['title' => 'I Kissed Dating Goodbye', 'author' => 'Joshua Harris', 'rating' => 3.2, 'cover' => 'https://covers.openlibrary.org/b/id/8232147-L.jpg'],
-    ['title' => 'White Fang', 'author' => 'Jack London', 'rating' => 4.0, 'cover' => 'https://covers.openlibrary.org/b/id/8231771-L.jpg'],
-    ['title' => 'The Harbinger', 'author' => 'Jonathan Cahn', 'rating' => 4.1, 'cover' => 'https://covers.openlibrary.org/b/id/8232947-L.jpg'],
-];
+$catsStmt = db()->query('SELECT id, name FROM categories ORDER BY name ASC LIMIT 3');
+$topCats = $catsStmt->fetchAll() ?: [];
+
+$recentStmt = db()->query('SELECT id, title, cover_path, file_path, format, is_free, created_at FROM books WHERE status = "active" ORDER BY created_at DESC LIMIT 12');
+$recent = $recentStmt->fetchAll() ?: [];
+
+$recStmt = db()->query('SELECT id, title, cover_path, file_path, format, is_free, views, downloads FROM books WHERE status = "active" ORDER BY downloads DESC, views DESC, created_at DESC LIMIT 12');
+$recommended = $recStmt->fetchAll() ?: [];
 
 require __DIR__ . '/partials/layout_top.php';
 
@@ -43,9 +31,9 @@ require __DIR__ . '/partials/layout_top.php';
 
         <div class="browse-filters mt-3">
             <a class="btn btn-outline-primary" href="<?= e(url('/browse.php')) ?>">Browse all</a>
-            <a class="btn btn-light" href="<?= e(url('/browse.php?category=1')) ?>">Fiction</a>
-            <a class="btn btn-light" href="<?= e(url('/browse.php?category=2')) ?>">Non-Fiction</a>
-            <a class="btn btn-light" href="<?= e(url('/browse.php?category=3')) ?>">Science</a>
+            <?php foreach ($topCats as $c): ?>
+                <a class="btn btn-light" href="<?= e(url('/browse.php?category=' . (int)$c['id'])) ?>"><?= e((string)$c['name']) ?></a>
+            <?php endforeach; ?>
         </div>
     </div>
 </div>
@@ -61,36 +49,43 @@ require __DIR__ . '/partials/layout_top.php';
 </div>
 
 <div class="book-row mb-4">
+    <?php if (!$recent): ?>
+        <div class="text-muted">No books yet. <?php if ($user && $user['role'] === 'admin'): ?><a href="<?= e(url('/admin/book_edit.php')) ?>">Add a book</a><?php else: ?><a href="<?= e(url('/browse.php')) ?>">Browse</a><?php endif; ?></div>
+    <?php else: ?>
     <?php foreach ($recent as $b): ?>
         <div class="book-card">
             <div class="book-tile">
                 <div class="book-cover">
-                    <img alt="" src="<?= e($b['cover']) ?>">
+                    <?php
+                    $cover = (string)($b['cover_path'] ?? '');
+                    $coverSrc = $cover !== '' ? (preg_match('~^https?://~i', $cover) ? $cover : url('/' . ltrim($cover, '/'))) : '';
+                    ?>
+                    <?php if ($coverSrc !== ''): ?>
+                        <img alt="" src="<?= e($coverSrc) ?>">
+                    <?php else: ?>
+                        <div class="text-muted small">No cover</div>
+                    <?php endif; ?>
                 </div>
                 <div class="book-badges">
-                    <span class="badge-soft blue">PDF</span>
-                    <span class="badge-soft green">Free</span>
+                    <span class="badge-soft blue"><?= e(strtoupper((string)($b['format'] ?? 'PDF'))) ?></span>
+                    <?php if ((int)($b['is_free'] ?? 0) === 1): ?><span class="badge-soft green">Free</span><?php endif; ?>
                 </div>
                 <div class="book-overlay"></div>
                 <div class="book-actions">
-                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/browse.php?q=' . urlencode((string)$b['title']))) ?>"><i class="bi bi-eye me-1"></i>Details</a>
-                    <a class="btn btn-sm btn-success w-100" href="<?= e(url('/browse.php?q=' . urlencode((string)$b['title']))) ?>"><i class="bi bi-book me-1"></i>Read</a>
+                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/book.php?id=' . (int)$b['id'])) ?>"><i class="bi bi-eye me-1"></i>Details</a>
+                    <?php if ((string)($b['file_path'] ?? '') !== ''): ?>
+                        <a class="btn btn-sm btn-success w-100" href="<?= e(url('/read.php?id=' . (int)$b['id'])) ?>" target="_blank"><i class="bi bi-book me-1"></i>Read</a>
+                    <?php else: ?>
+                        <button class="btn btn-sm btn-success w-100" disabled><i class="bi bi-book me-1"></i>Read</button>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="book-meta">
-                <div class="book-title"><?= e($b['title']) ?></div>
-                <div class="book-author"><?= e($b['author']) ?></div>
-                <div class="mt-1">
-                    <span class="stars" aria-label="Rating">
-                        <?php $r = (float)$b['rating']; $full = (int)floor($r); $empty = 5 - $full; ?>
-                        <?php for ($i = 0; $i < $full; $i++): ?><i class="bi bi-star-fill"></i><?php endfor; ?>
-                        <?php for ($i = 0; $i < $empty; $i++): ?><i class="bi bi-star-fill muted"></i><?php endfor; ?>
-                    </span>
-                    <span class="small text-muted ms-1"><?= e(number_format((float)$b['rating'], 1)) ?></span>
-                </div>
+                <div class="book-title"><?= e((string)$b['title']) ?></div>
             </div>
         </div>
     <?php endforeach; ?>
+    <?php endif; ?>
 </div>
 
 <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
@@ -105,35 +100,42 @@ require __DIR__ . '/partials/layout_top.php';
 </div>
 
 <div class="grid-books">
+    <?php if (!$recommended): ?>
+        <div class="text-muted">No books yet.</div>
+    <?php else: ?>
     <?php foreach ($recommended as $b): ?>
         <div>
             <div class="book-tile">
                 <div class="book-cover">
-                    <img alt="" src="<?= e($b['cover']) ?>">
+                    <?php
+                    $cover = (string)($b['cover_path'] ?? '');
+                    $coverSrc = $cover !== '' ? (preg_match('~^https?://~i', $cover) ? $cover : url('/' . ltrim($cover, '/'))) : '';
+                    ?>
+                    <?php if ($coverSrc !== ''): ?>
+                        <img alt="" src="<?= e($coverSrc) ?>">
+                    <?php else: ?>
+                        <div class="text-muted small">No cover</div>
+                    <?php endif; ?>
                 </div>
                 <div class="book-badges">
-                    <span class="badge-soft blue">PDF</span>
+                    <span class="badge-soft blue"><?= e(strtoupper((string)($b['format'] ?? 'PDF'))) ?></span>
                 </div>
                 <div class="book-overlay"></div>
                 <div class="book-actions">
-                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/browse.php?q=' . urlencode((string)$b['title']))) ?>"><i class="bi bi-eye me-1"></i>Details</a>
-                    <a class="btn btn-sm btn-success w-100" href="<?= e(url('/browse.php?q=' . urlencode((string)$b['title']))) ?>"><i class="bi bi-book me-1"></i>Read</a>
+                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/book.php?id=' . (int)$b['id'])) ?>"><i class="bi bi-eye me-1"></i>Details</a>
+                    <?php if ((string)($b['file_path'] ?? '') !== ''): ?>
+                        <a class="btn btn-sm btn-success w-100" href="<?= e(url('/read.php?id=' . (int)$b['id'])) ?>" target="_blank"><i class="bi bi-book me-1"></i>Read</a>
+                    <?php else: ?>
+                        <button class="btn btn-sm btn-success w-100" disabled><i class="bi bi-book me-1"></i>Read</button>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="book-meta">
-                <div class="book-title"><?= e($b['title']) ?></div>
-                <div class="book-author"><?= e($b['author']) ?></div>
-                <div class="mt-1">
-                    <span class="stars" aria-label="Rating">
-                        <?php $r = (float)$b['rating']; $full = (int)floor($r); $empty = 5 - $full; ?>
-                        <?php for ($i = 0; $i < $full; $i++): ?><i class="bi bi-star-fill"></i><?php endfor; ?>
-                        <?php for ($i = 0; $i < $empty; $i++): ?><i class="bi bi-star-fill muted"></i><?php endfor; ?>
-                    </span>
-                    <span class="small text-muted ms-1"><?= e(number_format((float)$b['rating'], 1)) ?></span>
-                </div>
+                <div class="book-title"><?= e((string)$b['title']) ?></div>
             </div>
         </div>
     <?php endforeach; ?>
+    <?php endif; ?>
 </div>
 
 <?php

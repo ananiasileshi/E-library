@@ -29,10 +29,6 @@ function base_path(): string
         return $auto;
     }
 
-    if ($auto !== '' && $auto !== $base) {
-        return $auto;
-    }
-
     return $base;
 }
 

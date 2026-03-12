@@ -111,7 +111,11 @@ $page = min($page, $pages);
                                 <div class="book-tile">
                                     <div class="book-cover">
                                         <?php if ((string)($b['cover_path'] ?? '') !== ''): ?>
-                                            <img alt="" src="<?= e((string)$b['cover_path']) ?>">
+                                            <?php
+                                            $cover = (string)$b['cover_path'];
+                                            $coverSrc = preg_match('~^https?://~i', $cover) ? $cover : url('/' . ltrim($cover, '/'));
+                                            ?>
+                                            <img alt="" src="<?= e($coverSrc) ?>">
                                         <?php else: ?>
                                             <div class="text-muted small">No cover</div>
                                         <?php endif; ?>
