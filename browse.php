@@ -153,12 +153,37 @@ $page = min($page, $pages);
                                     $baseParams = [];
                                     if ($q !== '') { $baseParams['q'] = $q; }
                                     if ($categoryId > 0) { $baseParams['category'] = $categoryId; }
+
+                                    $window = 2;
+                                    $start = max(1, $page - $window);
+                                    $end = min($pages, $page + $window);
                                     ?>
                                     <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
                                         <?php $p = max(1, $page - 1); $href = url('/browse.php?' . http_build_query(array_merge($baseParams, ['page' => $p]))); ?>
                                         <a class="page-link" href="<?= e($href) ?>">Prev</a>
                                     </li>
-                                    <li class="page-item disabled"><span class="page-link"><?= e((string)$page) ?> / <?= e((string)$pages) ?></span></li>
+
+                                    <?php if ($start > 1): ?>
+                                        <?php $href = url('/browse.php?' . http_build_query(array_merge($baseParams, ['page' => 1]))); ?>
+                                        <li class="page-item <?= $page === 1 ? 'active' : '' ?>"><a class="page-link" href="<?= e($href) ?>">1</a></li>
+                                        <?php if ($start > 2): ?>
+                                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+
+                                    <?php for ($i = $start; $i <= $end; $i++): ?>
+                                        <?php $href = url('/browse.php?' . http_build_query(array_merge($baseParams, ['page' => $i]))); ?>
+                                        <li class="page-item <?= $i === $page ? 'active' : '' ?>"><a class="page-link" href="<?= e($href) ?>"><?= e((string)$i) ?></a></li>
+                                    <?php endfor; ?>
+
+                                    <?php if ($end < $pages): ?>
+                                        <?php if ($end < $pages - 1): ?>
+                                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        <?php endif; ?>
+                                        <?php $href = url('/browse.php?' . http_build_query(array_merge($baseParams, ['page' => $pages]))); ?>
+                                        <li class="page-item <?= $page === $pages ? 'active' : '' ?>"><a class="page-link" href="<?= e($href) ?>"><?= e((string)$pages) ?></a></li>
+                                    <?php endif; ?>
+
                                     <li class="page-item <?= $page >= $pages ? 'disabled' : '' ?>">
                                         <?php $p = min($pages, $page + 1); $href = url('/browse.php?' . http_build_query(array_merge($baseParams, ['page' => $p]))); ?>
                                         <a class="page-link" href="<?= e($href) ?>">Next</a>
