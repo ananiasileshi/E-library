@@ -23,8 +23,8 @@ $user = current_user();
 <div class="app-shell">
     <aside class="app-sidebar border-end d-none d-lg-block">
         <div class="p-3 d-flex align-items-center gap-2">
-            <div class="brand-mark"></div>
-            <div class="fw-semibold">E-Library</div>
+            <img class="app-logo" src="<?= e(url('/logo.jpg')) ?>" alt="E-Library" width="52" height="40">
+            <div class="fw-semibold"></div>
         </div>
         <div class="px-3 pb-3">
             <div class="small text-uppercase text-muted mb-2">Menu</div>
@@ -55,7 +55,7 @@ $user = current_user();
     <div class="offcanvas offcanvas-start app-offcanvas" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-header">
             <div class="d-flex align-items-center gap-2" id="sidebarOffcanvasLabel">
-                <div class="brand-mark"></div>
+                <img class="app-logo" src="<?= e(url('/logo.jpg')) ?>" alt="E-Library" width="52" height="40">
                 <div class="fw-semibold">E-Library</div>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
