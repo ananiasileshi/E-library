@@ -6,7 +6,6 @@
                     <div class="col-12 col-lg-5">
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <div class="brand-mark"></div>
-                            <div class="fw-semibold">E-Library</div>
                         </div>
                         <div class="text-muted small app-footer-text">Discover, read, and download ebooks with a clean experience for members and admins.</div>
                     </div>
@@ -35,7 +34,7 @@
             </div>
             <div class="app-footer-bottom">
                 <div class="container-fluid py-2 small d-flex flex-wrap align-items-center justify-content-between gap-2">
-                    <div class="text-muted">&copy; <?= date('Y') ?> E-Library</div>
+                    <div class="text-muted">&copy; <?= date('Y') ?></div>
                     <div class="d-flex gap-3">
                         <a class="app-footer-link" href="#">Privacy</a>
                         <a class="app-footer-link" href="#">Terms</a>
