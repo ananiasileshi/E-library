@@ -26,7 +26,7 @@ require __DIR__ . '/partials/layout_top.php';
 ?>
 <!-- Hero Carousel -->
 <div class="hero-carousel mb-4">
-    <div class="hero-carousel-inner">
+    <div class="hero-carousel-inner" style="background-image: url('<?= e(url('/Cover.jpg')) ?>'); background-size: cover; background-position: center;">
         <div class="hero-slide active" style="background: linear-gradient(135deg, rgba(46,144,250,.15), rgba(155,81,224,.12))">
             <div class="hero-slide-content">
                 <div class="hero-badge"><i class="bi bi-stars"></i> Welcome to the Vault</div>
