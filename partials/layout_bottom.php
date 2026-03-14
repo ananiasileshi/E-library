@@ -48,9 +48,11 @@
             <div class="app-footer-bottom">
                 <div class="container-fluid py-2 small d-flex flex-wrap align-items-center justify-content-between gap-2">
                     <div class="text-muted">&copy; <?= date('Y') ?> E-Library</div>
-                    <div class="d-flex gap-3">
-                        <a class="app-footer-link" href="#">Privacy</a>
-                        <a class="app-footer-link" href="#">Terms</a>
+                    <div class="d-flex flex-wrap align-items-center justify-content-end gap-3">
+                        <a class="app-footer-link" href="#">Terms of Use</a>
+                        <a class="app-footer-link" href="#">Privacy Statement</a>
+                        <a class="app-footer-link" href="#">Accessibility Statement</a>
+                        <a class="app-footer-link" href="#">City of AddisAbaba Website</a>
                     </div>
                 </div>
             </div>

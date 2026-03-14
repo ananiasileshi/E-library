@@ -31,6 +31,30 @@ $navCategories = db()->query("SELECT id, name, slug FROM categories WHERE parent
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
     </filter>
 </svg>
+
+<!-- Infinite Promo Banner -->
+<div class="promo-marquee">
+    <div class="promo-marquee-track">
+        <span class="promo-item">READ THE LATEST TRENDING BOOKS & MAGAZINES</span>
+        <span class="promo-item">TOP PICKS FOR YOU</span>
+        <span class="promo-item">NEW ARRIVALS THIS WEEK</span>
+        <span class="promo-item">STAFF RECOMMENDATIONS</span>
+        <span class="promo-item">FREE BOOKS TO DOWNLOAD</span>
+        <span class="promo-item">DISCOVER NEW AUTHORS</span>
+        <span class="promo-item">MOST DOWNLOADED THIS MONTH</span>
+        <span class="promo-item">EDITOR'S CHOICE</span>
+        <!-- Duplicate for seamless loop -->
+        <span class="promo-item">READ THE LATEST TRENDING BOOKS & MAGAZINES</span>
+        <span class="promo-item">TOP PICKS FOR YOU</span>
+        <span class="promo-item">NEW ARRIVALS THIS WEEK</span>
+        <span class="promo-item">STAFF RECOMMENDATIONS</span>
+        <span class="promo-item">FREE BOOKS TO DOWNLOAD</span>
+        <span class="promo-item">DISCOVER NEW AUTHORS</span>
+        <span class="promo-item">MOST DOWNLOADED THIS MONTH</span>
+        <span class="promo-item">EDITOR'S CHOICE</span>
+    </div>
+</div>
+
 <div class="app-shell">
     <header class="app-header">
         <div class="app-header-inner">
