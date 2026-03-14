@@ -8,12 +8,17 @@ require_once __DIR__ . '/../includes/auth.php';
 
 $user = current_user();
 
+// Get categories for dropdown
+$navCategories = db()->query("SELECT id, name, slug FROM categories WHERE parent_id IS NULL ORDER BY name ASC LIMIT 12")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
 ?><!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($title ?? 'E-Library') ?></title>
+    <link rel="manifest" href="<?= e(url('/manifest.json')) ?>">
+    <meta name="theme-color" content="#2e90fa">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="<?= e(url('/assets/css/app.css')) ?>" rel="stylesheet">
@@ -35,20 +40,75 @@ $user = current_user();
                 </span>
             </a>
 
-            <nav class="app-nav d-none d-md-flex">
-                <a class="app-nav-link <?= e(nav_active('/index.php')) ?>" href="<?= e(url('/index.php')) ?>"><i class="bi bi-house"></i><span>Home</span></a>
-                <a class="app-nav-link <?= e(nav_active('/browse.php')) ?>" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-grid"></i><span>Browse</span></a>
+            <nav class="app-nav d-none d-lg-flex">
+                <a class="app-nav-link <?= e(nav_active('/index.php')) ?>" href="<?= e(url('/index.php')) ?>">
+                    <i class="bi bi-house"></i><span>Home</span>
+                </a>
+                
+                <div class="nav-dropdown">
+                    <a class="app-nav-link <?= e(nav_active('/browse.php')) ?>" href="<?= e(url('/browse.php')) ?>">
+                        <i class="bi bi-grid"></i><span>Browse</span><i class="bi bi-chevron-down ms-1" style="font-size:0.7rem"></i>
+                    </a>
+                    <div class="nav-dropdown-menu">
+                        <div class="nav-dropdown-grid">
+                            <?php foreach ($navCategories as $cat): ?>
+                                <a class="nav-dropdown-item" href="<?= e(url('/browse.php?category=' . $cat['slug'])) ?>">
+                                    <i class="bi bi-bookmark"></i><?= e($cat['name']) ?>
+                                </a>
+                            <?php endforeach; ?>
+                            <a class="nav-dropdown-item text-primary" href="<?= e(url('/browse.php')) ?>">
+                                <i class="bi bi-grid-3x3-gap"></i>All Categories
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <?php if ($user): ?>
-                    <a class="app-nav-link <?= e(nav_active('/dashboard.php')) ?>" href="<?= e(url('/dashboard.php')) ?>"><i class="bi bi-book"></i><span>My Library</span></a>
+                <div class="nav-dropdown">
+                    <a class="app-nav-link <?= e(nav_active('/dashboard.php')) ?>" href="<?= e(url('/dashboard.php')) ?>">
+                        <i class="bi bi-book"></i><span>My Library</span><i class="bi bi-chevron-down ms-1" style="font-size:0.7rem"></i>
+                    </a>
+                    <div class="nav-dropdown-menu">
+                        <a class="nav-dropdown-item" href="<?= e(url('/dashboard.php?shelf=reading')) ?>">
+                            <i class="bi bi-book-half"></i>Currently Reading
+                        </a>
+                        <a class="nav-dropdown-item" href="<?= e(url('/dashboard.php?shelf=want')) ?>">
+                            <i class="bi bi-bookmark-star"></i>Want to Read
+                        </a>
+                        <a class="nav-dropdown-item" href="<?= e(url('/dashboard.php?shelf=finished')) ?>">
+                            <i class="bi bi-check-circle"></i>Finished
+                        </a>
+                        <a class="nav-dropdown-item" href="<?= e(url('/dashboard.php?shelf=favorites')) ?>">
+                            <i class="bi bi-heart"></i>Favorites
+                        </a>
+                    </div>
+                </div>
                 <?php endif; ?>
+
                 <?php if ($user && $user['role'] === 'admin'): ?>
-                    <a class="app-nav-link <?= e(nav_active('/admin/index.php')) ?>" href="<?= e(url('/admin/index.php')) ?>"><i class="bi bi-shield-lock"></i><span>Admin</span></a>
+                <div class="nav-dropdown">
+                    <a class="app-nav-link <?= e(nav_active('/admin/index.php')) ?>" href="<?= e(url('/admin/index.php')) ?>">
+                        <i class="bi bi-shield-lock"></i><span>Admin</span><i class="bi bi-chevron-down ms-1" style="font-size:0.7rem"></i>
+                    </a>
+                    <div class="nav-dropdown-menu">
+                        <a class="nav-dropdown-item" href="<?= e(url('/admin/books.php')) ?>">
+                            <i class="bi bi-journal-text"></i>Manage Books
+                        </a>
+                        <a class="nav-dropdown-item" href="<?= e(url('/admin/categories.php')) ?>">
+                            <i class="bi bi-tags"></i>Categories
+                        </a>
+                        <a class="nav-dropdown-item" href="<?= e(url('/admin/import_books.php')) ?>">
+                            <i class="bi bi-cloud-upload"></i>Import Books
+                        </a>
+                    </div>
+                </div>
                 <?php endif; ?>
             </nav>
 
             <div class="app-header-right">
                 <form class="app-search-form d-none d-md-flex" action="<?= e(url('/browse.php')) ?>" method="get">
-                    <input class="form-control app-search-input" name="q" placeholder="Search books..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
+                    <i class="bi bi-search position-absolute" style="left:12px;color:var(--muted)"></i>
+                    <input class="form-control app-search-input" style="padding-left:36px" name="q" placeholder="Search books..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
                 </form>
 
                 <?php if ($user): ?>
@@ -58,6 +118,7 @@ $user = current_user();
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="<?= e(url('/dashboard.php')) ?>"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="<?= e(url('/profile.php')) ?>"><i class="bi bi-person me-2"></i>Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="<?= e(url('/logout.php')) ?>"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
                         </ul>
@@ -67,7 +128,7 @@ $user = current_user();
                     <a class="btn btn-sm btn-success" href="<?= e(url('/register.php')) ?>"><i class="bi bi-rocket-takeoff me-1"></i>Sign Up</a>
                 <?php endif; ?>
 
-                <button class="btn btn-sm btn-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav">
+                <button class="btn btn-sm btn-light d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav">
                     <i class="bi bi-list"></i>
                 </button>
             </div>
@@ -77,7 +138,7 @@ $user = current_user();
     <div class="offcanvas offcanvas-end app-offcanvas" tabindex="-1" id="mobileNav" aria-labelledby="mobileNavLabel">
         <div class="offcanvas-header">
             <div class="d-flex align-items-center gap-2" id="mobileNavLabel">
-                <span class="app-text-logo" aria-hidden="true">
+                <span class="app-text-logo" aria-hidden="true" style="font-size:1.5rem">
                     <span class="l1">L</span><span class="l2">I</span><span class="l3">B</span><span class="l4">R</span><span class="l5">A</span><span class="l6">R</span><span class="l7">Y</span>
                 </span>
             </div>
@@ -85,7 +146,10 @@ $user = current_user();
         </div>
         <div class="offcanvas-body">
             <form class="mb-3" action="<?= e(url('/browse.php')) ?>" method="get">
-                <input class="form-control" name="q" placeholder="Search books..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
+                <div class="input-group">
+                    <input class="form-control" name="q" placeholder="Search books..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
+                    <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                </div>
             </form>
             <nav class="nav flex-column gap-1">
                 <a class="nav-link app-navlink <?= e(nav_active('/index.php')) ?>" href="<?= e(url('/index.php')) ?>"><i class="bi bi-house me-2"></i>Home</a>
@@ -96,6 +160,13 @@ $user = current_user();
                 <?php if ($user && $user['role'] === 'admin'): ?>
                     <a class="nav-link app-navlink <?= e(nav_active('/admin/index.php')) ?>" href="<?= e(url('/admin/index.php')) ?>"><i class="bi bi-shield-lock me-2"></i>Admin</a>
                 <?php endif; ?>
+            </nav>
+            <hr>
+            <div class="fw-semibold small text-muted mb-2">Categories</div>
+            <nav class="nav flex-column gap-1">
+                <?php foreach ($navCategories as $cat): ?>
+                    <a class="nav-link app-navlink small" href="<?= e(url('/browse.php?category=' . $cat['slug'])) ?>"><?= e($cat['name']) ?></a>
+                <?php endforeach; ?>
             </nav>
             <hr>
             <?php if ($user): ?>

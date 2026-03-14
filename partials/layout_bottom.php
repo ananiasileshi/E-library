@@ -1,11 +1,12 @@
         </div>
 
-        <footer class="border-top app-footer">
+        <footer class="border-top app-footer d-none d-lg-block">
             <div class="container-fluid py-4">
                 <div class="row g-4">
                     <div class="col-12 col-lg-5">
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <div class="brand-mark"></div>
+                            <div class="fw-semibold">E-Library</div>
                         </div>
                         <div class="text-muted small app-footer-text">Discover, read, and download ebooks with a clean experience for members and admins.</div>
                     </div>
@@ -34,7 +35,7 @@
             </div>
             <div class="app-footer-bottom">
                 <div class="container-fluid py-2 small d-flex flex-wrap align-items-center justify-content-between gap-2">
-                    <div class="text-muted">&copy; <?= date('Y') ?></div>
+                    <div class="text-muted">&copy; <?= date('Y') ?> E-Library</div>
                     <div class="d-flex gap-3">
                         <a class="app-footer-link" href="#">Privacy</a>
                         <a class="app-footer-link" href="#">Terms</a>
@@ -43,6 +44,35 @@
             </div>
         </footer>
     </main>
+
+    <!-- Mobile Bottom Tab Bar -->
+    <nav class="mobile-tab-bar d-lg-none">
+        <a class="mobile-tab-item <?= nav_active('/index.php') ? 'active' : '' ?>" href="<?= e(url('/index.php')) ?>">
+            <i class="bi bi-house"></i>
+            <span>Home</span>
+        </a>
+        <a class="mobile-tab-item <?= nav_active('/browse.php') ? 'active' : '' ?>" href="<?= e(url('/browse.php')) ?>">
+            <i class="bi bi-grid"></i>
+            <span>Browse</span>
+        </a>
+        <?php if ($user): ?>
+        <a class="mobile-tab-item <?= nav_active('/dashboard.php') ? 'active' : '' ?>" href="<?= e(url('/dashboard.php')) ?>">
+            <i class="bi bi-book"></i>
+            <span>Library</span>
+        </a>
+        <?php else: ?>
+        <a class="mobile-tab-item" href="<?= e(url('/login.php')) ?>">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Login</span>
+        </a>
+        <?php endif; ?>
+        <?php if ($user): ?>
+        <a class="mobile-tab-item" href="<?= e(url('/profile.php')) ?>">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+        </a>
+        <?php endif; ?>
+    </nav>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
