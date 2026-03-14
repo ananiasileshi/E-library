@@ -45,7 +45,9 @@ body:before{content:"";position:fixed;inset:-20%;pointer-events:none;z-index:-1;
 .app-search-input{border-radius:999px;border:1px solid rgba(15,23,42,.10);background:rgba(255,255,255,.62);min-height:38px;padding-left:14px;padding-right:14px}
 .app-search-input:focus{border-color:#2e90fa;box-shadow:0 0 0 3px rgba(46,144,250,.14)}
 
-.app-main{flex:1;min-width:0}
+.app-main{flex:1;min-width:0;display:flex;flex-direction:column}
+.app-main > .app-container{flex:1}
+.app-main > .app-container.centered{display:flex;align-items:center;justify-content:center}
 
 .glass{background:var(--glass);backdrop-filter:saturate(180%) blur(var(--glass-blur));border:1px solid var(--glass-border);box-shadow:var(--glass-shadow);border-radius:18px}
 

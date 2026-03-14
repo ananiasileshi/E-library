@@ -50,12 +50,14 @@ $title = 'Login';
 require __DIR__ . '/partials/layout_top.php';
 
 ?>
-<div class="row justify-content-center">
-    <div class="col-12 col-md-7 col-lg-5">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <div class="h4 mb-1">Welcome back</div>
-                <div class="text-muted mb-4">Sign in to continue</div>
+<div class="container-fluid py-4 app-container centered">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="glass p-4">
+                <div class="text-center mb-4">
+                    <div class="h3 mb-1 fw-bold">Welcome back</div>
+                    <div class="text-muted">Sign in to continue</div>
+                </div>
 
                 <?php if (isset($errors['form'])): ?>
                     <div class="alert alert-danger"><?= e($errors['form']) ?></div>
@@ -65,23 +67,23 @@ require __DIR__ . '/partials/layout_top.php';
                     <input type="hidden" name="_csrf" value="<?= e(csrf_token()) ?>">
 
                     <div>
-                        <label class="form-label">Email</label>
-                        <input class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" type="email" name="email" value="<?= e($email) ?>" autocomplete="email" required>
+                        <label class="form-label fw-semibold">Email</label>
+                        <input class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>" type="email" name="email" value="<?= e($email) ?>" autocomplete="email" placeholder="you@example.com" required>
                         <?php if (isset($errors['email'])): ?>
                             <div class="invalid-feedback"><?= e($errors['email']) ?></div>
                         <?php endif; ?>
                     </div>
 
                     <div>
-                        <label class="form-label">Password</label>
-                        <input class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>" type="password" name="password" autocomplete="current-password" required>
+                        <label class="form-label fw-semibold">Password</label>
+                        <input class="form-control <?= isset($errors['password']) ? 'is-invalid' : '' ?>" type="password" name="password" autocomplete="current-password" placeholder="Enter your password" required>
                         <?php if (isset($errors['password'])): ?>
                             <div class="invalid-feedback"><?= e($errors['password']) ?></div>
                         <?php endif; ?>
                     </div>
 
-                    <button class="btn btn-success">Login</button>
-                    <div class="small text-muted">No account yet? <a href="<?= e(url('/register.php')) ?>">Register</a></div>
+                    <button class="btn btn-success w-100 rounded-pill py-2 fw-bold">Login</button>
+                    <div class="text-center small text-muted">No account yet? <a href="<?= e(url('/register.php')) ?>">Register</a></div>
                 </form>
             </div>
         </div>
