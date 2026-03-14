@@ -20,6 +20,12 @@ $user = current_user();
     <script>window.APP_BASE_PATH = <?= json_encode(base_path()) ?>;</script>
 </head>
 <body>
+<svg style="position:absolute;width:0;height:0" aria-hidden="true" focusable="false">
+    <filter id="liquid-distort">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+</svg>
 <div class="app-shell">
     <aside class="app-sidebar border-end d-none d-lg-block">
         <div class="p-3 d-flex align-items-center gap-2">

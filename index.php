@@ -21,18 +21,21 @@ require __DIR__ . '/partials/layout_top.php';
 ?>
 <div class="browse-head mb-4">
     <div class="browse-head-inner">
-        <div class="browse-title">Discover ebooks you’ll love</div>
-        <div class="browse-sub text-muted">Search, explore categories, and download files in seconds.</div>
+        <div class="browse-title"><span style="color:#E6452B">L</span><span style="color:#8BB746">I</span><span style="color:#2491BF">B</span><span style="color:#000000">R</span><span style="color:#000000">A</span><span style="color:#8BB746">R</span><span style="color:#000000">Y</span></div>
+        <div class="browse-sub text-muted">Search by title, author, or topic then start reading in minutes.</div>
 
-        <form method="get" action="<?= e(url('/browse.php')) ?>" class="browse-search mt-3">
-            <input class="form-control browse-search-input" name="q" placeholder="Search books, authors..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
-            <button class="btn btn-primary browse-search-btn" type="submit">Search</button>
+        <form method="get" action="<?= e(url('/browse.php')) ?>" class="browse-search hero-search mt-3">
+            <div class="hero-search-wrap">
+                <i class="bi bi-search hero-search-icon" aria-hidden="true"></i>
+                <input class="form-control browse-search-input hero-search-input" name="q" placeholder="Search books, authors..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
+            </div>
+            <button class="btn btn-primary browse-search-btn hero-search-btn" type="submit">Search</button>
         </form>
 
-        <div class="browse-filters mt-3">
-            <a class="btn btn-outline-primary" href="<?= e(url('/browse.php')) ?>">Browse all</a>
+        <div class="browse-filters hero-chips mt-3">
+            <a class="btn btn-outline-primary chip chip-primary" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-grid me-1" aria-hidden="true"></i>Browse all</a>
             <?php foreach ($topCats as $c): ?>
-                <a class="btn btn-light" href="<?= e(url('/browse.php?category=' . (int)$c['id'])) ?>"><?= e((string)$c['name']) ?></a>
+                <a class="btn btn-light chip" href="<?= e(url('/browse.php?category=' . (int)$c['id'])) ?>"><i class="bi bi-tag me-1" aria-hidden="true"></i><?= e((string)$c['name']) ?></a>
             <?php endforeach; ?>
         </div>
     </div>
@@ -63,7 +66,10 @@ require __DIR__ . '/partials/layout_top.php';
                     <?php if ($coverSrc !== ''): ?>
                         <img alt="" src="<?= e($coverSrc) ?>">
                     <?php else: ?>
-                        <div class="text-muted small">No cover</div>
+                        <div class="no-cover">
+                            <i class="bi bi-journal-bookmark" aria-hidden="true"></i>
+                            <div class="t">No cover</div>
+                        </div>
                     <?php endif; ?>
                 </div>
                 <div class="book-badges">
@@ -72,11 +78,11 @@ require __DIR__ . '/partials/layout_top.php';
                 </div>
                 <div class="book-overlay"></div>
                 <div class="book-actions">
-                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/book.php?id=' . (int)$b['id'])) ?>"><i class="bi bi-eye me-1"></i>Details</a>
+                    <a class="tile-action action-details" href="<?= e(url('/book.php?id=' . (int)$b['id'])) ?>" aria-label="Details" data-tip="Details"><i class="bi bi-eye" aria-hidden="true"></i></a>
                     <?php if ((string)($b['file_path'] ?? '') !== ''): ?>
-                        <a class="btn btn-sm btn-success w-100" href="<?= e(url('/read.php?id=' . (int)$b['id'])) ?>" target="_blank"><i class="bi bi-book me-1"></i>Read</a>
+                        <a class="tile-action action-read" href="<?= e(url('/read.php?id=' . (int)$b['id'])) ?>" target="_blank" aria-label="Read" data-tip="Read"><i class="bi bi-book" aria-hidden="true"></i></a>
                     <?php else: ?>
-                        <button class="btn btn-sm btn-success w-100" disabled><i class="bi bi-book me-1"></i>Read</button>
+                        <span class="tile-action action-read disabled" aria-label="Read" data-tip="Read" aria-disabled="true"><i class="bi bi-book" aria-hidden="true"></i></span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -114,7 +120,10 @@ require __DIR__ . '/partials/layout_top.php';
                     <?php if ($coverSrc !== ''): ?>
                         <img alt="" src="<?= e($coverSrc) ?>">
                     <?php else: ?>
-                        <div class="text-muted small">No cover</div>
+                        <div class="no-cover">
+                            <i class="bi bi-journal-bookmark" aria-hidden="true"></i>
+                            <div class="t">No cover</div>
+                        </div>
                     <?php endif; ?>
                 </div>
                 <div class="book-badges">
@@ -122,11 +131,11 @@ require __DIR__ . '/partials/layout_top.php';
                 </div>
                 <div class="book-overlay"></div>
                 <div class="book-actions">
-                    <a class="btn btn-sm btn-light w-100" href="<?= e(url('/book.php?id=' . (int)$b['id'])) ?>"><i class="bi bi-eye me-1"></i>Details</a>
+                    <a class="tile-action action-details" href="<?= e(url('/book.php?id=' . (int)$b['id'])) ?>" aria-label="Details" data-tip="Details"><i class="bi bi-eye" aria-hidden="true"></i></a>
                     <?php if ((string)($b['file_path'] ?? '') !== ''): ?>
-                        <a class="btn btn-sm btn-success w-100" href="<?= e(url('/read.php?id=' . (int)$b['id'])) ?>" target="_blank"><i class="bi bi-book me-1"></i>Read</a>
+                        <a class="tile-action action-read" href="<?= e(url('/read.php?id=' . (int)$b['id'])) ?>" target="_blank" aria-label="Read" data-tip="Read"><i class="bi bi-book" aria-hidden="true"></i></a>
                     <?php else: ?>
-                        <button class="btn btn-sm btn-success w-100" disabled><i class="bi bi-book me-1"></i>Read</button>
+                        <span class="tile-action action-read disabled" aria-label="Read" data-tip="Read" aria-disabled="true"><i class="bi bi-book" aria-hidden="true"></i></span>
                     <?php endif; ?>
                 </div>
             </div>

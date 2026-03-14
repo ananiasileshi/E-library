@@ -52,7 +52,10 @@ require __DIR__ . '/partials/layout_top.php';
                         ?>
                         <img alt="" src="<?= e($coverSrc) ?>">
                     <?php else: ?>
-                        <div class="text-muted small">No cover</div>
+                        <div class="no-cover">
+                            <i class="bi bi-journal-bookmark" aria-hidden="true"></i>
+                            <div class="t">No cover</div>
+                        </div>
                     <?php endif; ?>
                 </div>
                 <div class="mt-3 d-grid gap-2">

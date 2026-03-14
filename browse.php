@@ -78,19 +78,22 @@ $page = min($page, $pages);
             <button class="btn btn-primary browse-search-btn" type="submit">Search</button>
         </form>
 
-        <form method="get" action="<?= e(url('/browse.php')) ?>" class="browse-filters mt-3">
-            <input type="hidden" name="q" value="<?= e($q) ?>">
-            <select class="form-select browse-filter-select" name="category">
-                <option value="0">All categories</option>
-                <?php foreach ($categories as $c): ?>
-                    <option value="<?= (int)$c['id'] ?>" <?= (int)$c['id'] === $categoryId ? 'selected' : '' ?>><?= e((string)$c['name']) ?></option>
-                <?php endforeach; ?>
-            </select>
-            <button class="btn btn-outline-primary" type="submit">Apply</button>
-            <?php if ($q !== '' || $categoryId > 0): ?>
-                <a class="btn btn-light" href="<?= e(url('/browse.php')) ?>">Reset</a>
-            <?php endif; ?>
-        </form>
+        <div class="browse-filters hero-chips mt-3">
+            <?php
+            $base = [];
+            if ($q !== '') { $base['q'] = $q; }
+            ?>
+            <a class="btn btn-outline-primary chip <?= $categoryId === 0 ? 'chip-primary' : '' ?>" href="<?= e(url('/browse.php' . ($q !== '' ? ('?' . http_build_query($base)) : ''))) ?>"><i class="bi bi-grid me-1" aria-hidden="true"></i>Browse all</a>
+            <?php foreach ($categories as $c): ?>
+                <?php
+                $cid = (int)$c['id'];
+                $params = $base;
+                $params['category'] = $cid;
+                $isActive = $cid === $categoryId;
+                ?>
+                <a class="btn btn-light chip <?= $isActive ? 'chip-primary' : '' ?>" href="<?= e(url('/browse.php?' . http_build_query($params))) ?>"><i class="bi bi-tag me-1" aria-hidden="true"></i><?= e((string)$c['name']) ?></a>
+            <?php endforeach; ?>
+        </div>
     </div>
 </div>
 
@@ -117,7 +120,10 @@ $page = min($page, $pages);
                                             ?>
                                             <img alt="" src="<?= e($coverSrc) ?>">
                                         <?php else: ?>
-                                            <div class="text-muted small">No cover</div>
+                                            <div class="no-cover">
+                                                <i class="bi bi-journal-bookmark" aria-hidden="true"></i>
+                                                <div class="t">No cover</div>
+                                            </div>
                                         <?php endif; ?>
                                     </div>
                                     <div class="book-badges">
@@ -128,18 +134,18 @@ $page = min($page, $pages);
                                     </div>
                                     <div class="book-overlay"></div>
                                     <div class="book-actions">
-                                        <a class="btn btn-sm btn-light w-100" href="<?= e(url('/book.php?id=' . (int)$b['id'])) ?>"><i class="bi bi-eye me-1"></i>Details</a>
+                                        <a class="tile-action action-details" href="<?= e(url('/book.php?id=' . (int)$b['id'])) ?>" aria-label="Details" data-tip="Details"><i class="bi bi-eye" aria-hidden="true"></i></a>
                                         <?php if ((string)($b['file_path'] ?? '') !== ''): ?>
-                                            <a class="btn btn-sm btn-success w-100" href="<?= e(url('/read.php?id=' . (int)$b['id'])) ?>" target="_blank"><i class="bi bi-book me-1"></i>Read</a>
+                                            <a class="tile-action action-read" href="<?= e(url('/read.php?id=' . (int)$b['id'])) ?>" target="_blank" aria-label="Read" data-tip="Read"><i class="bi bi-book" aria-hidden="true"></i></a>
                                         <?php else: ?>
-                                            <button class="btn btn-sm btn-success w-100" disabled><i class="bi bi-book me-1"></i>Read</button>
+                                            <span class="tile-action action-read disabled" aria-label="Read" data-tip="Read" aria-disabled="true"><i class="bi bi-book" aria-hidden="true"></i></span>
                                         <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="book-meta">
                                     <div class="book-title"><?= e((string)$b['title']) ?></div>
                                     <div class="book-author small text-muted"><?= e((string)($b['category_name'] ?? '')) ?></div>
-                                    <div class="small text-muted mt-1">
+                                    <div class="book-stats">
                                         <i class="bi bi-eye"></i> <?= e((string)((int)($b['views'] ?? 0))) ?>
                                         <span class="mx-2">•</span>
                                         <i class="bi bi-download"></i> <?= e((string)((int)($b['downloads'] ?? 0))) ?>
