@@ -51,19 +51,12 @@ if ($minRating > 0 && $minRating <= 5) {
     $params[] = $minRating;
 }
 
-// Search
-$useFulltext = false;
+// Search - using LIKE for compatibility
 if ($q !== '') {
-    $useFulltext = mb_strlen($q) >= 3;
-    if ($useFulltext) {
-        $where[] = 'MATCH(b.title, b.summary, b.author) AGAINST (? IN BOOLEAN MODE)';
-        $params[] = $q . '*';
-    } else {
-        $where[] = '(b.title LIKE ? OR b.summary LIKE ? OR b.author LIKE ?)';
-        $params[] = '%' . $q . '%';
-        $params[] = '%' . $q . '%';
-        $params[] = '%' . $q . '%';
-    }
+    $where[] = '(b.title LIKE ? OR b.summary LIKE ? OR b.author LIKE ?)';
+    $params[] = '%' . $q . '%';
+    $params[] = '%' . $q . '%';
+    $params[] = '%' . $q . '%';
 }
 
 $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
