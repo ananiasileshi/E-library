@@ -107,8 +107,7 @@ $navCategories = db()->query("SELECT id, name, slug FROM categories WHERE parent
 
             <div class="app-header-right">
                 <form class="app-search-form d-none d-md-flex" action="<?= e(url('/browse.php')) ?>" method="get">
-                    <i class="bi bi-search position-absolute" style="left:12px;color:var(--muted)"></i>
-                    <input class="form-control app-search-input" style="padding-left:36px" name="q" placeholder="Search books..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
+                    <input class="form-control app-search-input" name="q" placeholder="Search books..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
                 </form>
 
                 <?php if ($user): ?>
