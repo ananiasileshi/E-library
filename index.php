@@ -30,7 +30,7 @@ require __DIR__ . '/partials/layout_top.php';
         <div class="hero-slide active" style="background: linear-gradient(135deg, rgba(46,144,250,.15), rgba(155,81,224,.12))">
             <div class="hero-slide-content">
                 <div class="hero-badge"><i class="bi bi-stars"></i> Welcome to the Vault</div>
-                <h1 class="hero-title">Enter the Vault of <span class="text-gradient">Forbidden Knowledge</span></h1>
+                <h1 class="hero-title">Explore the <span class="text-gradient">Library</span></h1>
                 <p class="hero-subtitle">Discover <?= e(number_format((int)($stats['total_books'] ?? 0))) ?>+ eBooks waiting for you. Free for members.</p>
                 <form method="get" action="<?= e(url('/browse.php')) ?>" class="hero-search mt-4">
                     <div class="hero-search-wrap">
