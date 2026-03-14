@@ -73,9 +73,12 @@ $page = min($page, $pages);
         <div class="browse-title">Browse Library</div>
         <div class="browse-sub text-muted"><?= $q !== '' ? 'Search: ' . e($q) : 'Search books and filter by category' ?></div>
 
-        <form method="get" action="<?= e(url('/browse.php')) ?>" class="browse-search mt-3">
-            <input class="form-control browse-search-input" name="q" placeholder="Search books, authors..." value="<?= e($q) ?>">
-            <button class="btn btn-primary browse-search-btn" type="submit">Search</button>
+        <form method="get" action="<?= e(url('/browse.php')) ?>" class="browse-search hero-search mt-3">
+            <div class="hero-search-wrap">
+                <i class="bi bi-search hero-search-icon" aria-hidden="true"></i>
+                <input class="form-control browse-search-input hero-search-input" name="q" placeholder="Search books, authors..." value="<?= e($q) ?>">
+            </div>
+            <button class="btn btn-primary browse-search-btn hero-search-btn" type="submit">Search</button>
         </form>
 
         <div class="browse-filters hero-chips mt-3">

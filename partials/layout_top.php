@@ -27,47 +27,66 @@ $user = current_user();
     </filter>
 </svg>
 <div class="app-shell">
-    <aside class="app-sidebar border-end d-none d-lg-block">
-        <div class="p-3 d-flex align-items-center gap-2">
-            <img class="app-logo" src="<?= e(url('/logo.jpg')) ?>" alt="E-Library" width="52" height="40">
-            <div class="fw-semibold"></div>
-        </div>
-        <div class="px-3 pb-3">
-            <div class="small text-uppercase text-muted mb-2">Menu</div>
-            <nav class="nav flex-column gap-1">
-                <a class="nav-link app-navlink <?= e(nav_active('/index.php')) ?>" href="<?= e(url('/index.php')) ?>"><i class="bi bi-house me-2"></i>Home</a>
-                <a class="nav-link app-navlink <?= e(nav_active('/browse.php')) ?>" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-grid me-2"></i>Browse</a>
+    <header class="app-header">
+        <div class="app-header-inner">
+            <a class="app-brand" href="<?= e(url('/index.php')) ?>" aria-label="Library home">
+                <span class="app-text-logo" aria-hidden="true">
+                    <span class="l1">L</span><span class="l2">I</span><span class="l3">B</span><span class="l4">R</span><span class="l5">A</span><span class="l6">R</span><span class="l7">Y</span>
+                </span>
+            </a>
+
+            <nav class="app-nav d-none d-md-flex">
+                <a class="app-nav-link <?= e(nav_active('/index.php')) ?>" href="<?= e(url('/index.php')) ?>"><i class="bi bi-house"></i><span>Home</span></a>
+                <a class="app-nav-link <?= e(nav_active('/browse.php')) ?>" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-grid"></i><span>Browse</span></a>
                 <?php if ($user): ?>
-                    <a class="nav-link app-navlink <?= e(nav_active('/dashboard.php')) ?>" href="<?= e(url('/dashboard.php')) ?>"><i class="bi bi-book me-2"></i>My Library</a>
+                    <a class="app-nav-link <?= e(nav_active('/dashboard.php')) ?>" href="<?= e(url('/dashboard.php')) ?>"><i class="bi bi-book"></i><span>My Library</span></a>
                 <?php endif; ?>
                 <?php if ($user && $user['role'] === 'admin'): ?>
-                    <a class="nav-link app-navlink <?= e(nav_active('/admin/index.php')) ?>" href="<?= e(url('/admin/index.php')) ?>"><i class="bi bi-shield-lock me-2"></i>Admin</a>
+                    <a class="app-nav-link <?= e(nav_active('/admin/index.php')) ?>" href="<?= e(url('/admin/index.php')) ?>"><i class="bi bi-shield-lock"></i><span>Admin</span></a>
                 <?php endif; ?>
             </nav>
 
-            <div class="small text-uppercase text-muted mt-4 mb-2">Account</div>
-            <nav class="nav flex-column gap-1">
-                <?php if (!$user): ?>
-                    <a class="nav-link app-navlink <?= e(nav_active('/login.php')) ?>" href="<?= e(url('/login.php')) ?>"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
-                    <a class="nav-link app-navlink <?= e(nav_active('/register.php')) ?>" href="<?= e(url('/register.php')) ?>"><i class="bi bi-person-plus me-2"></i>Register</a>
+            <div class="app-header-right">
+                <form class="app-search-form d-none d-md-flex" action="<?= e(url('/browse.php')) ?>" method="get">
+                    <input class="form-control app-search-input" name="q" placeholder="Search books..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
+                </form>
+
+                <?php if ($user): ?>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i><?= e($user['name']) ?>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="<?= e(url('/dashboard.php')) ?>"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="<?= e(url('/logout.php')) ?>"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
                 <?php else: ?>
-                    <div class="px-3 py-2 small text-muted">Signed in as <span class="text-dark fw-semibold"><?= e($user['name']) ?></span></div>
-                    <a class="nav-link app-navlink" href="<?= e(url('/logout.php')) ?>"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+                    <a class="btn btn-sm btn-outline-primary" href="<?= e(url('/login.php')) ?>"><i class="bi bi-box-arrow-in-right me-1"></i>Login</a>
+                    <a class="btn btn-sm btn-success" href="<?= e(url('/register.php')) ?>"><i class="bi bi-rocket-takeoff me-1"></i>Sign Up</a>
                 <?php endif; ?>
-            </nav>
-        </div>
-    </aside>
 
-    <div class="offcanvas offcanvas-start app-offcanvas" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+                <button class="btn btn-sm btn-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="offcanvas offcanvas-end app-offcanvas" tabindex="-1" id="mobileNav" aria-labelledby="mobileNavLabel">
         <div class="offcanvas-header">
-            <div class="d-flex align-items-center gap-2" id="sidebarOffcanvasLabel">
-                <img class="app-logo" src="<?= e(url('/logo.jpg')) ?>" alt="E-Library" width="52" height="40">
-                <div class="fw-semibold">E-Library</div>
+            <div class="d-flex align-items-center gap-2" id="mobileNavLabel">
+                <span class="app-text-logo" aria-hidden="true">
+                    <span class="l1">L</span><span class="l2">I</span><span class="l3">B</span><span class="l4">R</span><span class="l5">A</span><span class="l6">R</span><span class="l7">Y</span>
+                </span>
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body px-3 pb-3">
-            <div class="small text-uppercase text-muted mb-2">Menu</div>
+        <div class="offcanvas-body">
+            <form class="mb-3" action="<?= e(url('/browse.php')) ?>" method="get">
+                <input class="form-control" name="q" placeholder="Search books..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
+            </form>
             <nav class="nav flex-column gap-1">
                 <a class="nav-link app-navlink <?= e(nav_active('/index.php')) ?>" href="<?= e(url('/index.php')) ?>"><i class="bi bi-house me-2"></i>Home</a>
                 <a class="nav-link app-navlink <?= e(nav_active('/browse.php')) ?>" href="<?= e(url('/browse.php')) ?>"><i class="bi bi-grid me-2"></i>Browse</a>
@@ -78,41 +97,16 @@ $user = current_user();
                     <a class="nav-link app-navlink <?= e(nav_active('/admin/index.php')) ?>" href="<?= e(url('/admin/index.php')) ?>"><i class="bi bi-shield-lock me-2"></i>Admin</a>
                 <?php endif; ?>
             </nav>
-
-            <div class="small text-uppercase text-muted mt-4 mb-2">Account</div>
-            <nav class="nav flex-column gap-1">
-                <?php if (!$user): ?>
-                    <a class="nav-link app-navlink <?= e(nav_active('/login.php')) ?>" href="<?= e(url('/login.php')) ?>"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
-                    <a class="nav-link app-navlink <?= e(nav_active('/register.php')) ?>" href="<?= e(url('/register.php')) ?>"><i class="bi bi-person-plus me-2"></i>Register</a>
-                <?php else: ?>
-                    <div class="px-3 py-2 small text-muted">Signed in as <span class="text-dark fw-semibold"><?= e($user['name']) ?></span></div>
-                    <a class="nav-link app-navlink" href="<?= e(url('/logout.php')) ?>"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
-                <?php endif; ?>
-            </nav>
+            <hr>
+            <?php if ($user): ?>
+                <div class="px-2 small text-muted mb-2">Signed in as <strong><?= e($user['name']) ?></strong></div>
+                <a class="nav-link app-navlink text-danger" href="<?= e(url('/logout.php')) ?>"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+            <?php else: ?>
+                <a class="nav-link app-navlink" href="<?= e(url('/login.php')) ?>"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
+                <a class="nav-link app-navlink" href="<?= e(url('/register.php')) ?>"><i class="bi bi-person-plus me-2"></i>Register</a>
+            <?php endif; ?>
         </div>
     </div>
 
     <main class="app-main">
-        <header class="app-topbar border-bottom">
-            <div class="container-fluid py-2">
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-sm btn-light d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
-                        <i class="bi bi-list"></i>
-                    </button>
-                    <div class="flex-grow-1">
-                        <form class="d-flex" action="<?= e(url('/browse.php')) ?>" method="get">
-                            <input class="form-control app-search" name="q" placeholder="Search books, authors..." value="<?= e((string)($_GET['q'] ?? '')) ?>">
-                        </form>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <?php if ($user): ?>
-                            <a class="btn btn-sm btn-success" href="<?= e(url('/dashboard.php')) ?>"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
-                        <?php else: ?>
-                            <a class="btn btn-sm btn-success" href="<?= e(url('/register.php')) ?>"><i class="bi bi-rocket-takeoff me-1"></i>Get Started</a>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </header>
-
         <div class="container-fluid py-4 app-container">

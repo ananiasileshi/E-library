@@ -83,6 +83,223 @@ if ($filename === '') {
 
 $viewName = $filename . ($ext ? ('.' . $ext) : '');
 
+if ($ext === 'pdf') {
+    $title = 'Read: ' . (string)$book['title'];
+    
+    // Read PDF file and encode as base64 to bypass IDM
+    $pdfData = base64_encode(file_get_contents($abs));
+    
+    require __DIR__ . '/partials/layout_top.php';
+    ?>
+    <div class="reader-shell">
+        <div class="reader-topbar">
+            <div class="reader-title"><?= e((string)$book['title']) ?></div>
+            <div class="reader-actions">
+                <button class="btn btn-sm btn-light" id="zoomOut" title="Zoom Out"><i class="bi bi-zoom-out"></i></button>
+                <span class="reader-zoom-level" id="zoomLevel">100%</span>
+                <button class="btn btn-sm btn-light" id="zoomIn" title="Zoom In"><i class="bi bi-zoom-in"></i></button>
+                <button class="btn btn-sm btn-outline-primary" id="fitPage" title="Fit to Page"><i class="bi bi-arrows-fullscreen"></i></button>
+                <a class="btn btn-sm btn-light" href="<?= e(url('/book.php?id=' . $id)) ?>"><i class="bi bi-info-circle me-1"></i>Details</a>
+            </div>
+        </div>
+
+        <div class="reader-stage" id="readerStage">
+            <div class="reader-book" id="flipBook" aria-label="Book pages">
+                <div class="pdf-loading">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <div class="mt-2">Loading PDF...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="reader-nav">
+            <button class="btn btn-light" type="button" id="flipPrev" aria-label="Previous page"><i class="bi bi-chevron-left"></i> Prev</button>
+            <div class="reader-page" id="flipPage">1 / 1</div>
+            <button class="btn btn-light" type="button" id="flipNext" aria-label="Next page">Next <i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        (function () {
+            // PDF data embedded directly - no HTTP request
+            const pdfBase64 = "<?= $pdfData ?>";
+            const pdfData = atob(pdfBase64);
+            const pdfBytes = new Uint8Array(pdfData.length);
+            for (let i = 0; i < pdfData.length; i++) {
+                pdfBytes[i] = pdfData.charCodeAt(i);
+            }
+
+            const container = document.getElementById('flipBook');
+            const stage = document.getElementById('readerStage');
+            const prevBtn = document.getElementById('flipPrev');
+            const nextBtn = document.getElementById('flipNext');
+            const pageEl = document.getElementById('flipPage');
+            const zoomInBtn = document.getElementById('zoomIn');
+            const zoomOutBtn = document.getElementById('zoomOut');
+            const zoomLevelEl = document.getElementById('zoomLevel');
+            const fitPageBtn = document.getElementById('fitPage');
+
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+            let pdfDoc = null;
+            let currentPage = 1;
+            let currentScale = 1;
+            let baseScale = 1;
+            const pageCache = {};
+            const zoomStep = 0.15;
+
+            function updateZoomDisplay() {
+                zoomLevelEl.textContent = Math.round(currentScale / baseScale * 100) + '%';
+            }
+
+            function getFitScale() {
+                if (!pdfDoc) return 1;
+                
+                // Get stage dimensions
+                const stageWidth = stage.clientWidth - 40;
+                const stageHeight = stage.clientHeight - 40;
+                
+                // Get page dimensions at scale 1
+                return pdfDoc.getPage(currentPage).then(function (page) {
+                    const viewport = page.getViewport({ scale: 1 });
+                    
+                    // Calculate scale to fit both width and height
+                    const scaleW = stageWidth / viewport.width;
+                    const scaleH = stageHeight / viewport.height;
+                    
+                    // Use smaller scale to ensure page fits entirely
+                    return Math.min(scaleW, scaleH);
+                });
+            }
+
+            function renderPage(num, scale) {
+                return new Promise(function (resolve, reject) {
+                    pdfDoc.getPage(num).then(function (page) {
+                        const scaledViewport = page.getViewport({ scale: scale });
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.floor(scaledViewport.width);
+                        canvas.height = Math.floor(scaledViewport.height);
+
+                        const ctx = canvas.getContext('2d', { alpha: false });
+                        
+                        page.render({
+                            canvasContext: ctx,
+                            viewport: scaledViewport
+                        }).promise.then(function () {
+                            resolve({ canvas, width: scaledViewport.width, height: scaledViewport.height });
+                        }).catch(reject);
+                    }).catch(reject);
+                });
+            }
+
+            function displayPage(num, scale) {
+                setHint('Loading page ' + num + '...');
+                
+                renderPage(num, scale).then(function (result) {
+                    container.innerHTML = '';
+                    
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'pdf-page-wrapper';
+                    
+                    result.canvas.style.maxWidth = '100%';
+                    result.canvas.style.height = 'auto';
+                    
+                    wrapper.appendChild(result.canvas);
+                    container.appendChild(wrapper);
+
+                    if (pageEl) pageEl.textContent = num + ' / ' + pdfDoc.numPages;
+                    setHint('');
+                }).catch(function (err) {
+                    console.error('Error rendering page:', err);
+                    setHint('Error loading page');
+                });
+            }
+
+            function showPage(num) {
+                if (!pdfDoc || num < 1 || num > pdfDoc.numPages) return;
+                currentPage = num;
+                displayPage(num, currentScale);
+            }
+
+            function prevPage() {
+                if (currentPage > 1) showPage(currentPage - 1);
+            }
+
+            function nextPage() {
+                if (currentPage < pdfDoc.numPages) showPage(currentPage + 1);
+            }
+
+            function zoomIn() {
+                currentScale = Math.min(currentScale + baseScale * zoomStep, baseScale * 3);
+                updateZoomDisplay();
+                displayPage(currentPage, currentScale);
+            }
+
+            function zoomOut() {
+                currentScale = Math.max(currentScale - baseScale * zoomStep, baseScale * 0.5);
+                updateZoomDisplay();
+                displayPage(currentPage, currentScale);
+            }
+
+            function fitToPage() {
+                getFitScale().then(function (scale) {
+                    baseScale = scale;
+                    currentScale = scale;
+                    updateZoomDisplay();
+                    displayPage(currentPage, currentScale);
+                });
+            }
+
+            function setHint(v) {
+                const hint = document.querySelector('.pdf-loading');
+                if (hint) hint.querySelector('div:last-child').textContent = v;
+            }
+
+            // Load PDF from embedded data
+            pdfjsLib.getDocument({ data: pdfBytes }).promise.then(function (pdf) {
+                pdfDoc = pdf;
+                
+                // Calculate initial fit scale
+                getFitScale().then(function (scale) {
+                    baseScale = scale;
+                    currentScale = scale;
+                    updateZoomDisplay();
+                    showPage(1);
+                });
+            }).catch(function (err) {
+                console.error('PDF load error:', err);
+                container.innerHTML = '<div class="alert alert-danger m-3">Could not load PDF.</div>';
+            });
+
+            // Event listeners
+            if (prevBtn) prevBtn.addEventListener('click', prevPage);
+            if (nextBtn) nextBtn.addEventListener('click', nextPage);
+            if (zoomInBtn) zoomInBtn.addEventListener('click', zoomIn);
+            if (zoomOutBtn) zoomOutBtn.addEventListener('click', zoomOut);
+            if (fitPageBtn) fitPageBtn.addEventListener('click', fitToPage);
+
+            window.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowLeft') prevPage();
+                if (e.key === 'ArrowRight') nextPage();
+                if (e.key === '+' || e.key === '=') zoomIn();
+                if (e.key === '-') zoomOut();
+            });
+
+            // Recalculate on window resize
+            let resizeTimeout;
+            window.addEventListener('resize', function () {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(fitToPage, 250);
+            });
+        })();
+    </script>
+    <?php
+    require __DIR__ . '/partials/layout_bottom.php';
+    exit;
+}
+
 $mime = 'application/octet-stream';
 if ($ext === 'pdf') {
     $mime = 'application/pdf';
