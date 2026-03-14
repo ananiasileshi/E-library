@@ -4,11 +4,12 @@
             <div class="container-fluid py-4">
                 <div class="row g-4">
                     <div class="col-12 col-lg-5">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <div class="brand-mark"></div>
-                            <div class="fw-semibold">E-Library</div>
-                        </div>
-                        <div class="text-muted small app-footer-text">Discover, read, and download ebooks with a clean experience for members and admins.</div>
+                        <a class="app-brand" href="<?= e(url('/index.php')) ?>">
+                            <span class="app-text-logo" aria-hidden="true">
+                                <span class="l1">L</span><span class="l2">I</span><span class="l3">B</span><span class="l4">R</span><span class="l5">A</span><span class="l6">R</span><span class="l7">Y</span>
+                            </span>
+                        </a>
+                        <div class="text-muted small app-footer-text mt-2">Discover, read, and download ebooks with a clean experience for members and admins.</div>
                     </div>
                     <div class="col-6 col-lg-3">
                         <div class="fw-semibold small mb-2">Quick links</div>
