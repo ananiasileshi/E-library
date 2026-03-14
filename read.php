@@ -147,9 +147,10 @@ if ($ext === 'pdf') {
             let currentScale = 1;
             let baseScale = 1;
             const pageCache = {};
-            const zoomStep = 0.15;
+            const zoomStep = 0.25; // Larger zoom steps
 
             function updateZoomDisplay() {
+                // Show actual scale relative to PDF's natural size (1.5x base = 100%)
                 zoomLevelEl.textContent = Math.round(currentScale / baseScale * 100) + '%';
             }
 
@@ -157,19 +158,22 @@ if ($ext === 'pdf') {
                 if (!pdfDoc) return 1;
                 
                 // Get stage dimensions
-                const stageWidth = stage.clientWidth - 40;
-                const stageHeight = stage.clientHeight - 40;
+                const stageWidth = stage.clientWidth - 60;
+                const stageHeight = stage.clientHeight - 60;
                 
                 // Get page dimensions at scale 1
                 return pdfDoc.getPage(currentPage).then(function (page) {
                     const viewport = page.getViewport({ scale: 1 });
                     
-                    // Calculate scale to fit both width and height
+                    // Calculate scale to fit width (better for reading)
                     const scaleW = stageWidth / viewport.width;
                     const scaleH = stageHeight / viewport.height;
                     
-                    // Use smaller scale to ensure page fits entirely
-                    return Math.min(scaleW, scaleH);
+                    // Use width-based scale for better readability, but don't exceed height
+                    let scale = Math.min(scaleW * 1.3, scaleH * 1.1); // Boost by 30% for width
+                    
+                    // Ensure minimum readable scale (at least 1.2x PDF native size)
+                    return Math.max(scale, 1.2);
                 });
             }
 
