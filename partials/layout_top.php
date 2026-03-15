@@ -87,6 +87,10 @@ $navCategories = db()->query("SELECT id, name, slug FROM categories WHERE parent
                     </div>
                 </div>
 
+                <a class="app-nav-link <?= e(nav_active('/about.php')) ?>" href="<?= e(url('/about.php')) ?>">
+                    <i class="bi bi-info-circle"></i><span>About</span>
+                </a>
+
                 <?php if ($user): ?>
                 <div class="nav-dropdown">
                     <a class="app-nav-link <?= e(nav_active('/dashboard.php')) ?>" href="<?= e(url('/dashboard.php')) ?>">
